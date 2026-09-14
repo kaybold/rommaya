@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rommaya — Billets CAA, Lubumbashi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff;
+    --surface:#faf8f3;
+    --ink:#181c22;
+    --muted:#6b6455;
+    --copper:#c1793e;
+    --copper-dark:#8f5427;
+    --line:#e6e1d4;
+    --max:1080px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:16px;
+    line-height:1.55;
+  }
+  h1,h2,h3{
+    font-family:'Space Grotesk', sans-serif;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  a{color:inherit;}
+  svg{display:block;max-width:100%;}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 28px;}
+  :focus-visible{outline:2px solid var(--copper);outline-offset:3px;}
+  @media (prefers-reduced-motion: reduce){*{animation:none !important;}}
+
+  /* NAV */
+  header.nav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(255,255,255,0.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 28px;max-width:var(--max);margin:0 auto;
+  }
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand svg{height:30px;width:auto;}
+  .brand-word{font-weight:600;font-size:1.05rem;}
+  .brand-tag{font-size:0.72rem;color:var(--muted);display:block;margin-top:1px;}
+  .nav-cta{
+    background:var(--copper);color:#fff;
+    padding:10px 18px;border-radius:8px;
+    font-weight:600;font-size:0.9rem;text-decoration:none;
+    transition:background 0.15s ease;
+  }
+  .nav-cta:hover{background:var(--copper-dark);}
+
+  /* HERO */
+  .hero{padding:64px 0 76px;}
+  .hero-grid{
+    display:grid;grid-template-columns:1.05fr 0.95fr;gap:48px;align-items:center;
+  }
+  .hero-copy{opacity:0;transform:translateY(12px);animation:rise 0.6s ease 0.1s forwards;}
+  @keyframes rise{to{opacity:1;transform:translateY(0);}}
+  .kicker{color:var(--copper);font-weight:600;font-size:0.92rem;margin-bottom:14px;}
+  .hero h1{
+    font-size:clamp(2rem, 4vw, 3.1rem);font-weight:600;max-width:13ch;
+  }
+  .hero p.lede{margin-top:18px;max-width:46ch;color:var(--muted);font-size:1.04rem;}
+  .hero-actions{margin-top:30px;display:flex;gap:14px;flex-wrap:wrap;}
+  .btn-primary{
+    background:var(--copper);color:#fff;
+    padding:14px 24px;border-radius:9px;font-weight:600;
+    text-decoration:none;font-size:0.98rem;
+    transition:background 0.15s ease;
+  }
+  .btn-primary:hover{background:var(--copper-dark);}
+  .btn-ghost{
+    border:1px solid var(--line);color:var(--ink);
+    padding:14px 22px;border-radius:9px;font-weight:500;
+    text-decoration:none;font-size:0.98rem;
+  }
+  .hero-note{margin-top:18px;font-size:0.85rem;color:var(--muted);}
+
+  .map-box{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .map-box svg{width:100%;height:auto;}
+  .route-line{stroke-dasharray:5 5;}
+  .city-dot{fill:var(--ink);}
+  .city-dot.hub{fill:var(--copper);}
+  .city-label{font-family:'IBM Plex Sans', sans-serif;font-size:11px;fill:var(--muted);}
+  .city-label.hub{fill:var(--copper);font-weight:600;}
+
+  /* SECTIONS */
+  section{padding:64px 0;border-top:1px solid var(--line);}
+  .section-head{max-width:56ch;margin-bottom:36px;}
+  .section-head h2{font-size:clamp(1.4rem,2.4vw,1.9rem);font-weight:600;}
+  .section-head p{margin-top:10px;color:var(--muted);font-size:1rem;}
+
+  /* STEPS */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .step{border:1px solid var(--line);border-radius:12px;padding:24px 22px;background:var(--surface);}
+  .step-num{font-family:'Space Grotesk', sans-serif;font-size:0.85rem;color:var(--copper);font-weight:600;margin-bottom:12px;}
+  .step h3{font-size:1.05rem;font-weight:600;margin-bottom:8px;}
+  .step p{color:var(--muted);font-size:0.92rem;margin:0;}
+
+  /* DESTINATIONS */
+  .dest-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+    gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;
+  }
+  .dest-cell{background:#fff;padding:20px 18px;}
+  .dest-cell .route{font-weight:600;font-size:0.98rem;}
+  .dest-cell .from{font-size:0.82rem;color:var(--muted);margin-top:5px;}
+
+  /* PAYMENT */
+  .pay-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  .pay-card{border:1px solid var(--line);border-radius:12px;padding:22px;background:var(--surface);}
+  .pay-badge{
+    width:42px;height:42px;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:0.72rem;margin-bottom:14px;color:#fff;
+  }
+  .pay-card h3{font-size:0.98rem;font-weight:600;margin-bottom:6px;}
+  .pay-card p{font-size:0.87rem;color:var(--muted);margin:0;}
+  .pay-note{
+    margin-top:26px;font-size:0.9rem;color:var(--ink);
+    border-left:2px solid var(--copper);padding-left:16px;
+  }
+
+  /* FORM */
+  .form-shell{display:grid;grid-template-columns:0.9fr 1.1fr;gap:52px;align-items:start;}
+  .form-side p{margin-top:12px;color:var(--muted);max-width:40ch;}
+  form{border:1px solid var(--line);border-radius:14px;padding:28px;background:var(--surface);}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:0.85rem;font-weight:500;margin-bottom:7px;color:var(--ink);}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  input[type=text], input[type=date], select{
+    width:100%;padding:11px 12px;border-radius:8px;
+    border:1px solid var(--line);background:#fff;color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;font-size:16px;
+  }
+  input::placeholder{color:#a39d8c;}
+  .child-toggle{display:flex;align-items:center;gap:10px;margin:18px 0 4px;font-size:0.9rem;}
+  .child-toggle input{width:16px;height:16px;accent-color:var(--copper);}
+  #childField{display:none;margin-top:14px;}
+  #childField.show{display:block;}
+  .submit-btn{
+    width:100%;margin-top:8px;background:var(--copper);color:#fff;border:none;
+    padding:14px;border-radius:9px;font-weight:600;font-size:1rem;cursor:pointer;
+    transition:background 0.15s ease;font-family:'IBM Plex Sans', sans-serif;
+  }
+  .submit-btn:hover{background:var(--copper-dark);}
+  .form-fine{font-size:0.78rem;color:var(--muted);margin-top:12px;}
+
+  /* FOOTER */
+  footer{padding:40px 0;border-top:1px solid var(--line);}
+  .foot-inner{display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;font-size:0.86rem;color:var(--muted);}
+  .foot-inner strong{color:var(--ink);}
+  .disclaimer{margin-top:18px;font-size:0.76rem;color:#a39d8c;max-width:70ch;}
+
+  @media (max-width:860px){
+    .hero-grid{grid-template-columns:1fr;}
+    .steps{grid-template-columns:1fr;}
+    .pay-grid{grid-template-columns:1fr;}
+    .form-shell{grid-template-columns:1fr;gap:32px;}
+    .row2{grid-template-columns:1fr;}
+  }
+
+  @media (max-width:600px){
+    .wrap{padding:0 18px;}
+    .nav-inner{padding:12px 18px;}
+    .brand-tag{display:none;}
+    .hero{padding:36px 0 44px;}
+    section{padding:44px 0;}
+    .hero-actions{flex-direction:column;}
+    .btn-primary,.btn-ghost{width:100%;text-align:center;}
+    .map-box svg{width:480px;}
+    .step,.pay-card{padding:18px 16px;}
+    .dest-cell{padding:16px 14px;}
+    form{padding:20px;}
+    .foot-inner{flex-direction:column;gap:14px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="brand">
+      <svg viewBox="0 0 68 60" width="34" height="30" aria-hidden="true">
+        <circle cx="34" cy="30" r="27" fill="none" stroke="#c1793e" stroke-width="2"/>
+        <path d="M16 40 L52 14 L30 26 Z" fill="#c1793e"/>
+        <path d="M30 26 L52 14 L34 46 Z" fill="#8f5427"/>
+      </svg>
+      <div>
+        <span class="brand-word">Rommaya</span>
+        <span class="brand-tag">Agent indépendant CAA</span>
+      </div>
+    </div>
+    <a class="nav-cta" href="#reserver">Réserver</a>
+  </div>
+</header>
+
+<section class="hero" style="border-top:none;">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <div class="kicker">Basée à Lubumbashi — joignable dans toute la RDC</div>
+      <h1>Vos billets CAA, partout en RDC</h1>
+      <p class="lede">Rommaya réserve vos vols CAA au départ de Lubumbashi ou d'autres villes de la RDC, vers ces destinations. Où que vous soyez en RDC, contactez-nous sur WhatsApp : nous confirmons trajet et tarif, puis votre réservation est validée dès réception du paiement.</p>
+      <div class="hero-actions">
+        <a class="btn-primary" href="https://wa.me/243000000000?text=Bonjour%2C%20je%20souhaite%20r%C3%A9server%20un%20billet%20CAA%20au%20d%C3%A9part%20de%20Lubumbashi." target="_blank" rel="noopener">
+          Écrire sur WhatsApp
+        </a>
+        <a class="btn-ghost" href="#reserver">Remplir le formulaire</a>
+      </div>
+      <div class="hero-note">Réponse habituelle en moins de 30 minutes, du lundi au samedi.</div>
+    </div>
+
+    <div class="map-box">
+      <svg viewBox="0 0 520 500" xmlns="http://www.w3.org/2000/svg">
+        <line class="route-line" x1="400" y1="440" x2="230" y2="420" stroke="#c1793e" stroke-width="1.4"/>
+        <line class="route-line" x1="400" y1="440" x2="480" y2="340" stroke="#c1793e" stroke-width="1.4"/>
+        <line class="route-line" x1="400" y1="440" x2="110" y2="300" stroke="#c1793e" stroke-width="1.4"/>
+        <line class="route-line" x1="400" y1="440" x2="270" y2="250" stroke="#c1793e" stroke-width="1.4"/>
+        <line class="route-line" x1="400" y1="440" x2="370" y2="180" stroke="#c1793e" stroke-width="1.4"/>
+        <line class="route-line" x1="400" y1="440" x2="300" y2="80" stroke="#c1793e" stroke-width="1.4"/>
+        <line class="route-line" x1="400" y1="440" x2="40" y2="160" stroke="#c1793e" stroke-width="1.4"/>
+
+        <circle class="city-dot hub" cx="400" cy="440" r="5"/>
+        <text class="city-label hub" x="412" y="444">Lubumbashi</text>
+
+        <circle class="city-dot" cx="230" cy="420" r="4"/>
+        <text class="city-label" x="230" y="404" text-anchor="middle">Kolwezi</text>
+
+        <circle class="city-dot" cx="480" cy="340" r="4"/>
+        <text class="city-label" x="480" y="324" text-anchor="middle">Kalemie</text>
+
+        <circle class="city-dot" cx="110" cy="300" r="4"/>
+        <text class="city-label" x="110" y="284" text-anchor="middle">Kananga</text>
+
+        <circle class="city-dot" cx="270" cy="250" r="4"/>
+        <text class="city-label" x="270" y="234" text-anchor="middle">Mbuji-Mayi</text>
+
+        <circle class="city-dot" cx="370" cy="180" r="4"/>
+        <text class="city-label" x="370" y="164" text-anchor="middle">Kindu</text>
+
+        <circle class="city-dot" cx="300" cy="80" r="4"/>
+        <text class="city-label" x="300" y="64" text-anchor="middle">Kisangani</text>
+
+        <circle class="city-dot" cx="40" cy="160" r="4"/>
+        <text class="city-label" x="40" y="144" text-anchor="middle">Kinshasa</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Comment ça marche</h2>
+      <p>Où que vous soyez en RDC, tout se passe sur WhatsApp en trois étapes.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h3>Contactez-nous</h3>
+        <p>Envoyez votre trajet et votre date sur WhatsApp, ou remplissez le formulaire ci-dessous.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h3>Envoyez le paiement</h3>
+        <p>Une fois le trajet et le tarif confirmés par message, vous payez via M-Pesa, Airtel Money ou Orange Money.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h3>Réservation confirmée</h3>
+        <p>Votre billet CAA est confirmé et envoyé sur WhatsApp dès réception du paiement.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Nos destinations</h2>
+      <p>Vols CAA au départ de Lubumbashi ou d'autres villes de la RDC, vers ces destinations. Contactez-nous depuis n'importe quelle ville du pays pour réserver. Tarifs communiqués sur demande, selon la période.</p>
+    </div>
+    <div class="dest-grid">
+      <div class="dest-cell"><div class="route">Lubumbashi → Kinshasa</div><div class="from">Vols directs et via Kolwezi</div></div>
+      <div class="dest-cell"><div class="route">Lubumbashi → Kolwezi</div><div class="from">Liaison régionale fréquente</div></div>
+      <div class="dest-cell"><div class="route">Lubumbashi → Kananga</div><div class="from">Plusieurs départs par semaine</div></div>
+      <div class="dest-cell"><div class="route">Lubumbashi → Mbuji-Mayi</div><div class="from">Sur demande</div></div>
+      <div class="dest-cell"><div class="route">Lubumbashi → Kisangani</div><div class="from">Sur demande</div></div>
+      <div class="dest-cell"><div class="route">Lubumbashi → Kindu</div><div class="from">Sur demande</div></div>
+      <div class="dest-cell"><div class="route">Lubumbashi → Kalemie</div><div class="from">Sur demande</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Paiement Mobile Money</h2>
+      <p>Le paiement se fait une fois le contact établi sur WhatsApp et le vol confirmé par notre équipe.</p>
+    </div>
+    <div class="pay-grid">
+      <div class="pay-card">
+        <div class="pay-badge" style="background:#e2003a;">M-Pesa</div>
+        <h3>M-Pesa</h3>
+        <p>Paiement par Vodacom M-Pesa, numéro communiqué après confirmation du vol.</p>
+      </div>
+      <div class="pay-card">
+        <div class="pay-badge" style="background:#e40000;">Airtel</div>
+        <h3>Airtel Money</h3>
+        <p>Paiement par Airtel Money, reçu envoyé immédiatement après transaction.</p>
+      </div>
+      <div class="pay-card">
+        <div class="pay-badge" style="background:#f7941d;">Orange</div>
+        <h3>Orange Money</h3>
+        <p>Paiement par Orange Money, accepté pour tous les trajets intérieurs.</p>
+      </div>
+    </div>
+    <p class="pay-note">La réservation n'est confirmée qu'après réception du paiement, une fois le contact établi sur WhatsApp.</p>
+  </div>
+</section>
+
+<section id="reserver">
+  <div class="wrap">
+    <div class="form-shell">
+      <div class="form-side">
+        <h2>Réserver un billet</h2>
+        <p>Remplissez vos informations. Nous ouvrons WhatsApp avec votre demande déjà préparée — il ne reste qu'à l'envoyer.</p>
+      </div>
+
+      <form id="bookingForm">
+        <div class="row2">
+          <div class="field">
+            <label for="firstName">Prénom</label>
+            <input type="text" id="firstName" placeholder="Prénom" required>
+          </div>
+          <div class="field">
+            <label for="lastName">Nom</label>
+            <input type="text" id="lastName" placeholder="Nom" required>
+          </div>
+        </div>
+
+        <div class="row2">
+          <div class="field">
+            <label for="from">Départ</label>
+            <select id="from">
+              <option>Lubumbashi</option>
+              <option>Kinshasa</option>
+              <option>Kolwezi</option>
+              <option>Kananga</option>
+              <option>Mbuji-Mayi</option>
+              <option>Kisangani</option>
+              <option>Kindu</option>
+              <option>Kalemie</option>
+              <option>Autre ville</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="to">Destination</label>
+            <select id="to">
+              <option>Lubumbashi</option>
+              <option>Kinshasa</option>
+              <option>Kolwezi</option>
+              <option>Kananga</option>
+              <option>Mbuji-Mayi</option>
+              <option>Kisangani</option>
+              <option>Kindu</option>
+              <option>Kalemie</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="travelDate">Date de voyage souhaitée</label>
+          <input type="date" id="travelDate">
+        </div>
+
+        <label class="child-toggle">
+          <input type="checkbox" id="hasChild">
+          Un enfant de moins de 12 ans voyage avec moi
+        </label>
+
+        <div id="childField">
+          <div class="row2">
+            <div class="field">
+              <label for="childAge">Âge de l'enfant</label>
+              <input type="text" id="childAge" placeholder="Ex : 7 ans">
+            </div>
+            <div class="field">
+              <label for="childDob">Date de naissance</label>
+              <input type="date" id="childDob">
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn">Envoyer ma demande sur WhatsApp</button>
+        <p class="form-fine">Vous serez redirigé vers WhatsApp avec votre demande pré-remplie. Le paiement (M-Pesa, Airtel Money ou Orange Money) confirme votre réservation, une fois le contact établi sur WhatsApp.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-inner">
+      <div><strong>Rommaya</strong><br>Agent indépendant — billets CAA, RDC</div>
+      <div>Basée à Lubumbashi, Haut-Katanga<br>Clients servis dans toute la RDC</div>
+      <div><a href="https://wa.me/243000000000" target="_blank" rel="noopener">WhatsApp Business</a></div>
+    </div>
+    <p class="disclaimer">Rommaya est un revendeur indépendant de billets CAA (Compagnie Africaine d'Aviation) et n'est pas un service officiel de la compagnie aérienne.</p>
+  </div>
+</footer>
+
+<script>
+  const hasChild = document.getElementById('hasChild');
+  const childField = document.getElementById('childField');
+  hasChild.addEventListener('change', () => {
+    childField.classList.toggle('show', hasChild.checked);
+  });
+
+  document.getElementById('bookingForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const first = document.getElementById('firstName').value.trim();
+    const last = document.getElementById('lastName').value.trim();
+    const from = document.getElementById('from').value;
+    const to = document.getElementById('to').value;
+    const date = document.getElementById('travelDate').value;
+    let msg = `Bonjour, je souhaite réserver un billet CAA.%0A`;
+    msg += `Nom : ${first} ${last}%0A`;
+    msg += `Trajet : ${from} → ${to}%0A`;
+    if(date) msg += `Date souhaitée : ${date}%0A`;
+    if(hasChild.checked){
+      const age = document.getElementById('childAge').value.trim();
+      const dob = document.getElementById('childDob').value;
+      msg += `Enfant de moins de 12 ans : âge ${age || 'non précisé'}`;
+      if(dob) msg += `, né(e) le ${dob}`;
+      msg += `%0A`;
+    }
+    window.open(`https://wa.me/243000000000?text=${msg}`, '_blank');
+  });
+</script>
+
+</body>
+</html>
